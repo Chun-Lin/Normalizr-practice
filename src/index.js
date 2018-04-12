@@ -346,8 +346,8 @@ const blogData = [
     id: '3',
     title: 'This other post',
     author: {
-      id: '246',
-      name: 'Spambot5000',
+      id: '247',
+      name: 'Spambot5',
     },
     comments: [
       {
@@ -374,63 +374,47 @@ const blogData = [
 // // value: entity的input value
 // // parent: input data的parent object
 // // key: parent object的key
-const userProcessStrategy = (value, parent, key) => {
-  switch (key) {
-    case 'author':
-      return { ...value, posts: [parent.id] }
-    case 'commenter':
-      return { ...value, comments: [parent.id] }
-    default:
-      return { ...value }
-  }
-}
+// const userProcessStrategy = (value, parent, key) => {
+//   switch (key) {
+//     case 'author':
+//       return { ...value, posts: [parent.id] }
+//     case 'commenter':
+//       return { ...value, comments: [parent.id] }
+//     default:
+//       return { ...value }
+//   }
+// }
 
 // mergeStrategy：相同的id value做merge，資料較新的會蓋過舊的資料，因此需要另外宣告exception
 // 如下面的posts和comments，新的posts和comments會壓過舊的，因此需要concat新的資料
-const userMergeStrategy = (entityA, entityB) => {
-  return {
-    ...entityA,
-    ...entityB,
-    posts: [...(entityA.posts || []), ...(entityB.posts || [])],
-    comments: [...(entityA.comments || []), ...(entityB.comments || [])],
-  }
-}
+// const userMergeStrategy = (entityA, entityB) => {
+//   return {
+//     ...entityA,
+//     ...entityB,
+//     posts: [...(entityA.posts || []), ...(entityB.posts || [])],
+//     comments: [...(entityA.comments || []), ...(entityB.comments || [])],
+//   }
+// }
 
-const user = new schema.Entity(
-  'users',
-  {},
-  {
-    mergeStrategy: userMergeStrategy,
-    processStrategy: userProcessStrategy,
-  },
-)
+const userSchema = new schema.Entity('users')
 
-const comment = new schema.Entity(
-  'comments',
-  {
-    commenter: user,
-  },
-{
-  processStrategy: (value, parent, key) => {
-    return { ...value, post: parent.id }
-  },
-},
-)
-
-const post = new schema.Entity('posts', {
-  author: user,
-  comments: [comment],
+const commentSchema = new schema.Entity('comments', {
+  commenter: userSchema,
 })
 
-const normalizedData = normalize(blogData, [post])
+const postSchema = new schema.Entity('posts', {
+  author: userSchema,
+  comments: [commentSchema],
+})
+
+const normalizedData = normalize(blogData, [postSchema])
 const normalizedOutput = JSON.stringify(normalizedData, null, 2)
 console.log(normalizedOutput)
 
 const denormalizedData = denormalize(
   [1, 2, 3],
-  [post],
+  [postSchema],
   normalizedData.entities,
 )
 const denormalizeOutput = JSON.stringify(denormalizedData, null, 2)
 // console.log(denormalizeOutput)
-
