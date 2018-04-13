@@ -375,16 +375,18 @@ const blogData = [
 // parent: input data的parent object
 // key: parent object的key
 
-// mergeStrategy：相同的id value做merge，資料較新的會蓋過舊的資料，因此需要另外宣告exception
-// 如下面的posts和comments，新的posts和comments會壓過舊的，因此需要concat新的資料
-// const userMergeStrategy = (entityA, entityB) => {
-//   return {
-//     ...entityA,
-//     ...entityB,
-//     posts: [...(entityA.posts || []), ...(entityB.posts || [])],
-//     comments: [...(entityA.comments || []), ...(entityB.comments || [])],
-//   }
-// }
+//mergeStrategy：相同的id value做merge，資料較新的會蓋過舊的資料，因此需要另外宣告exception
+//如下面的posts和comments，新的posts和comments會壓過舊的，因此需要concat新的資料
+
+
+const userMergeStrategy = (entityA, entityB) => {
+  return {
+    ...entityA,
+    ...entityB,
+    posts: [...(entityA.posts || []), ...(entityB.posts || [])],
+    comments: [...(entityA.comments || []), ...(entityB.comments || [])],
+  }
+}
 
 const userProcessStrategy = (value, parent, key) => {
   switch (key) {
@@ -402,6 +404,7 @@ const userSchema = new schema.Entity(
   {},
   {
     processStrategy: userProcessStrategy,
+    mergeStrategy: userMergeStrategy
   },
 )
 
