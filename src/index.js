@@ -374,16 +374,6 @@ const blogData = [
 // value: entity的input value
 // parent: input data的parent object
 // key: parent object的key
-const userProcessStrategy = (value, parent, key) => {
-  switch (key) {
-    case 'author':
-      return { ...value, posts: [parent.id] }
-    case 'commenter':
-      return { ...value, comments: [parent.id] }
-    default:
-      return { ...value }
-  }
-}
 
 // mergeStrategy：相同的id value做merge，資料較新的會蓋過舊的資料，因此需要另外宣告exception
 // 如下面的posts和comments，新的posts和comments會壓過舊的，因此需要concat新的資料
@@ -396,9 +386,24 @@ const userProcessStrategy = (value, parent, key) => {
 //   }
 // }
 
-const userSchema = new schema.Entity('users', {} , {
-  processStrategy: userProcessStrategy
-})
+const userProcessStrategy = (value, parent, key) => {
+  switch (key) {
+    case 'author':
+      return { ...value, posts: [parent.id] }
+    case 'commenter':
+      return { ...value, comments: [parent.id] }
+    default:
+      return { ...value }
+  }
+}
+
+const userSchema = new schema.Entity(
+  'users',
+  {},
+  {
+    processStrategy: userProcessStrategy,
+  },
+)
 
 const commentSchema = new schema.Entity('comments', {
   commenter: userSchema,
