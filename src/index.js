@@ -1,5 +1,4 @@
 import { normalize, schema, Entity, denormalize } from 'normalizr'
-import { omit } from 'lodash'
 
 /** normalizr example **/
 const blogData = [
@@ -33,16 +32,16 @@ const blogData = [
     id: '2',
     title: 'This other post',
     author: {
-      id: '123',
-      name: 'Paul',
+      id: '245',
+      name: 'Jane',
     },
     comments: [
       {
         id: '251',
         content: 'Your other post was nicer',
         commenter: {
-          id: '245',
-          name: 'Jane',
+          id: '123',
+          name: 'Paul',
         },
       },
       {
